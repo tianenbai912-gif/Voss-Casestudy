@@ -25,8 +25,19 @@ def load_build_book(path="data/build_book.csv"):
     return orders
 
 
+def candidates_by_amount(orders, amount):
+    """Return orders whose balance due exactly equals the payment amount."""
+    return [o for o in orders if o["balance_due"] == amount]
+
+
 if __name__ == "__main__":
     orders = load_build_book()
     print(f"Orders loaded: {len(orders)}")
     for order in orders:
         print(f"{order['order_ref']}  {order['customer']:<16}  balance: {order['balance_due']}")
+
+    payment = Decimal("2850.00")
+    matches = candidates_by_amount(orders, payment)
+    print(f"\nCandidates for GBP {payment}: {len(matches)}")
+    for order in matches:
+        print(f"  {order['order_ref']}  {order['customer']}")
