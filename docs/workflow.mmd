@@ -1,0 +1,54 @@
+flowchart TD
+    Start([Start]) --> Orders[Load Build Book snapshot]
+    Start --> Bank[Import bank payments]
+    Start --> Supp[Import supplier invoices]
+    Start --> Bal[Check balance invoices]
+
+    Bank --> Norm["Normalise reference (reconcile.py)"]
+    Norm --> Batch{"Same order in batch twice?"}
+    Batch -- Yes --> Dup["Potential duplicate: hold for review (C2)"]
+    Batch -- No --> HasRef{"Reference has order number?"}
+    HasRef -- No --> Name["Score payee name against candidates (score_names.py)"]
+    Name --> Lead{"One candidate leads on every scorer?"}
+    Lead -- Yes --> Sugg["Suggested match: confirm"]
+    Lead -- No --> Multi["Multiple candidates: human review (C3)"]
+    HasRef -- Yes --> Found{"Order in Build Book?"}
+    Found -- No --> Unalloc["Unallocated payment"]
+    Found -- Yes --> Dep{"Deposit amount and nothing paid yet?"}
+    Dep -- Yes --> DepM["Deposit matched (C1)"]
+    Dep -- No --> Inv["Investigate payment"]
+
+    Supp --> Sender{"Sender domain matches supplier master? (RapidFuzz)"}
+    Sender -- No --> Spoof["Block payment: possible spoof (B4)"]
+    Sender -- Yes --> Dispute{"Line disputed?"}
+    Dispute -- Yes --> Held["Hold disputed line (C5)"]
+    Dispute -- No --> Paid["Pay undisputed lines plus VAT (C5)"]
+    Held --> Split{"Split equals invoice total?"}
+    Paid --> Split
+
+    Bal --> Over{"Overseas customer?"}
+    Over -- Yes --> VAT["Hold for VAT and delivery review (C4)"]
+    Over -- No --> UK["Issue invoice with UK VAT"]
+    Bal --> Rem{"Balance due and 2 or more reminders?"}
+    Rem -- Yes --> Phone["Phone customer (C6)"]
+    Rem -- No --> Draft["Draft reminder for review"]
+    Bal --> Unpaid{"Balance unpaid?"}
+    Unpaid -- Yes --> Block["Block dispatch (not yet coded)"]
+
+    Dup --> Log[Write audit log]
+    Sugg --> Log
+    Multi --> Log
+    Unalloc --> Log
+    Inv --> Log
+    DepM --> Log
+    Spoof --> Log
+    Split --> Log
+    VAT --> Log
+    UK --> Log
+    Phone --> Log
+    Draft --> Log
+    Block --> Log
+    Log --> Report[Generate reconciliation report]
+    Report --> Done([Done])
+
+    style Block stroke-dasharray: 5 5
