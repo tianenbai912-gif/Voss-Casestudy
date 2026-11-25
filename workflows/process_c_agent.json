@@ -1,0 +1,173 @@
+{
+  "name": "Process C Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "da8fca39-3815-4658-9aff-64628e17c2c9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "bc27365c-6769-421d-b4da-3f51dd472acf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        208
+      ],
+      "id": "1fae1bc0-0a44-4b21-a572-bdb3aee4bc72",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "a3p4oPvTuRF2xa4M",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "449def6b-dcfb-4dab-8bef-f1ba66653e81",
+              "name": "reference",
+              "value": "VC-2026-034 DEPOSIT",
+              "type": "string"
+            },
+            {
+              "id": "148ed16d-a918-43b9-bb8d-9600aca64b15",
+              "name": "amount",
+              "value": "1000.00",
+              "type": "string"
+            },
+            {
+              "id": "d1490eff-0bd3-4397-b58a-dce8bab497da",
+              "name": "payee",
+              "value": "J OKORO",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "2adc3908-0026-4bfc-b16f-f0345865ca87",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/tools/match_payment",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "reference",
+              "value": "={{ $fromAI('reference') }}"
+            },
+            {
+              "name": "amount",
+              "value": "={{ $fromAI('amount') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        608,
+        208
+      ],
+      "id": "e82e40cd-ad44-4ac2-ad9e-44aa1c2bee29",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cd1e1421-346b-41b0-a67c-7b56913c4126",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "923d89c788966402c10bc4324b3b16094b77b0ea123cdded53dc15e315eeecf1"
+  },
+  "nodeGroups": [],
+  "id": "oAAUYJ7JDJzE2YIv",
+  "tags": []
+}
