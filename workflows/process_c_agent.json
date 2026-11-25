@@ -16,7 +16,9 @@
       "parameters": {
         "promptType": "define",
         "text": "={{ JSON.stringify($json) }}",
-        "options": {}
+        "options": {
+          "systemMessage": "Use match_payment first. Only call name_candidates if match_payment returns no_reference.\nReport exactly the outcome the tool returned. Do not describe a tool result you did not receive."
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
@@ -108,6 +110,35 @@
       ],
       "id": "e82e40cd-ad44-4ac2-ad9e-44aa1c2bee29",
       "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Scores a bank payee name against Build Book orders that share the payment amount. Returns human_review when names don't clearly separate candidates, or suggested_match when one candidate leads on every scorer.",
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/tools/name_candidates",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "payee",
+              "value": "={{ $fromAI('payee') }}"
+            },
+            {
+              "name": "amount",
+              "value": "={{ $fromAI('amount') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        704,
+        304
+      ],
+      "id": "40dbb1c5-09fa-4cdc-86aa-2a4aad5b636d",
+      "name": "HTTP Request1"
     }
   ],
   "pinData": {},
@@ -155,6 +186,17 @@
           }
         ]
       ]
+    },
+    "HTTP Request1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -162,7 +204,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "cd1e1421-346b-41b0-a67c-7b56913c4126",
+  "versionId": "4346bcbb-cf9e-49a9-9e13-38f5f91111e8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "923d89c788966402c10bc4324b3b16094b77b0ea123cdded53dc15e315eeecf1"
