@@ -139,6 +139,25 @@
       ],
       "id": "40dbb1c5-09fa-4cdc-86aa-2a4aad5b636d",
       "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        176,
+        432
+      ],
+      "id": "cc59b42f-49b7-4487-a189-845109e3ba06",
+      "name": "Schedule Trigger1"
     }
   ],
   "pinData": {},
@@ -197,14 +216,29 @@
           }
         ]
       ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/London",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "4346bcbb-cf9e-49a9-9e13-38f5f91111e8",
+  "versionId": "85e83044-3f05-41f2-bfc4-e52f481fecdd",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "923d89c788966402c10bc4324b3b16094b77b0ea123cdded53dc15e315eeecf1"
